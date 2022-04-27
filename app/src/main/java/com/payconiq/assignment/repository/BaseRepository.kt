@@ -1,6 +1,7 @@
 package com.payconiq.assignment.repository
 
-import android.util.Log
+import com.google.gson.Gson
+import com.payconiq.assignment.network.ErrorWrapper
 import com.payconiq.assignment.network.HttpErrorCode
 import com.payconiq.assignment.network.ResultWrapper
 import kotlinx.coroutines.CoroutineDispatcher
@@ -19,8 +20,19 @@ open class BaseRepository {
         return withContext(dispatcher) {
             try {
                 val response = call.invoke()
-                Log.e("@@@COMES HERE....", "$response")
-                ResultWrapper.Success(response.body())
+                when {
+                    response.code() == 200 -> ResultWrapper.Success(response.body())
+                    else -> {
+                        val body = response.errorBody()
+                        val bodyString = body?.string()
+                        val errorResponse =
+                            Gson().fromJson(bodyString, ErrorWrapper::class.java)
+                        ResultWrapper.GenericError(
+                            response.code(),
+                            errorResponse.message
+                        )
+                    }
+                }
             } catch (throwable: Throwable) {
                 when (throwable) {
                     is IOException -> ResultWrapper.NetworkError
