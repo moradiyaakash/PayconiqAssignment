@@ -1,5 +1,6 @@
 package com.payconiq.assignment.adapters
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -33,15 +34,18 @@ class UserItemAdapter(private val onUserClick: (user: FindUserResponse.User) -> 
 
     override fun getItemCount(): Int = users.count()
 
+    @SuppressLint("NotifyDataSetChanged")
     fun addItems(searchedUsers: ArrayList<FindUserResponse.User>) {
         users.clear()
         users.addAll(searchedUsers)
-        notifyItemRangeInserted(0, users.count())
+        notifyDataSetChanged()
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun clear() {
         val size = users.count()
         users.clear()
         notifyItemRangeRemoved(0, size)
+        notifyDataSetChanged()
     }
 }

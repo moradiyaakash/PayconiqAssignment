@@ -8,18 +8,6 @@
         android:layout_height="match_parent"
         tools:context=".ui.MainActivity">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="0dp"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:layout_constraintBottom_toTopOf="@+id/nav_main"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:title="@string/app_name"
-            app:titleTextColor="@color/white" />
-
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/container"
             android:name="androidx.navigation.fragment.NavHostFragment"
@@ -29,7 +17,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/toolbar"
+            app:layout_constraintTop_toTopOf="parent"
             app:navGraph="@navigation/nav_main" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">PayconiqAssignment</string>
     <string name="hint_search">Search</string>
+    <string name="lbl_followers">%d followers</string>
+    <string name="lbl_not_available">Not available</string>
+    <string name="lbl_bio_not_available">Bio not available</string>
+
+    <string name="warning_no_internet_connection">No internet connection found.Check your connection or try again.</string>
+    <string name="warning_something_wrong">Oops,something went wrong.Please try again later.</string>
 </resources>

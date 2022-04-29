@@ -3,12 +3,32 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_main"
-    app:startDestination="@id/searchFragment">
+    app:startDestination="@id/findUserFragment">
 
     <fragment
-        android:id="@+id/searchFragment"
+        android:id="@+id/findUserFragment"
         android:name="com.payconiq.assignment.ui.FindUserFragment"
-        android:label="FragmentHome"
-        tools:layout="@layout/fragment_find_user" />
+        android:label="FindUserFragment"
+        tools:layout="@layout/fragment_find_user">
 
+        <action
+            android:id="@+id/action_findUser_to_userProfile"
+            app:destination="@id/userProfileFragment"
+            app:enterAnim="@anim/pull_in_right"
+            app:exitAnim="@anim/push_out_left"
+            app:popEnterAnim="@anim/pull_in_left"
+            app:popExitAnim="@anim/push_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/userProfileFragment"
+        android:name="com.payconiq.assignment.ui.UserProfileFragment"
+        android:label="UserProfileFragment"
+        tools:layout="@layout/fragment_user_profile">
+
+        <argument
+            android:name="userName"
+            app:argType="java.lang.String"
+            app:nullable="true" />
+    </fragment>
 </navigation>

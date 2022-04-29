@@ -11,8 +11,6 @@ import java.util.concurrent.TimeUnit
 
 object ApiClient {
 
-    private const val BASE_URL: String = "https://api.github.com/"
-
     private val gson : Gson by lazy {
         GsonBuilder().setLenient().create()
     }
@@ -32,7 +30,7 @@ object ApiClient {
 
     private val retrofit : Retrofit by lazy {
         Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(BuildConfig.BaseUrl)
             .client(httpClient)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()

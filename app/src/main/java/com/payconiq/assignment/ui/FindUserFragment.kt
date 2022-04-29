@@ -8,6 +8,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.payconiq.assignment.R
 import com.payconiq.assignment.adapters.UserItemAdapter
 import com.payconiq.assignment.databinding.FragmentFindUserBinding
@@ -15,18 +16,20 @@ import com.payconiq.assignment.network.ResultWrapper
 import com.payconiq.assignment.network.model.FindUserResponse
 import com.payconiq.assignment.utils.afterTextChanged
 import com.payconiq.assignment.utils.hideKeyboard
-import com.payconiq.assignment.utils.toast
-import com.payconiq.assignment.viewmodel.UserViewModel
+import com.payconiq.assignment.utils.show
+import com.payconiq.assignment.utils.showSnackBar
+import com.payconiq.assignment.viewModels.FindUserViewModel
 
 class FindUserFragment : Fragment() {
 
     private lateinit var findUserBinding: FragmentFindUserBinding
-    private lateinit var userViewModel: UserViewModel
+    private lateinit var findUserViewModel: FindUserViewModel
     private var userItemAdapter: UserItemAdapter? = null
+    private var currentView: View? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
+        findUserViewModel = ViewModelProvider(this)[FindUserViewModel::class.java]
         setLiveDataObservers()
     }
 
@@ -34,34 +37,43 @@ class FindUserFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        findUserBinding =
-            DataBindingUtil.inflate(inflater, R.layout.fragment_find_user, container, false)
-        return findUserBinding.root
+    ): View? {
+        if (currentView == null) {
+            findUserBinding =
+                DataBindingUtil.inflate(inflater, R.layout.fragment_find_user, container, false)
+            initializeScreenVariables()
+            currentView = findUserBinding.root
+        }
+        return currentView
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    private fun initializeScreenVariables() {
 
-        userItemAdapter = UserItemAdapter {
+        userItemAdapter = UserItemAdapter { user ->
+
+            val action = FindUserFragmentDirections.actionFindUserToUserProfile(user.login)
+            findNavController().navigate(action)
         }
         findUserBinding.rvUsers.adapter = userItemAdapter
 
-        findUserBinding.searchField.setEndIconOnClickListener {
+        findUserBinding.edtSearch.afterTextChanged { text ->
 
-            findUserBinding.edtSearch.hideKeyboard()
-            findUserBinding.edtSearch.text = null
+            if (text.isNotEmpty()) {
+                findUserViewModel.callFindUserApi(text)
+            } else {
+                resetSearch(false)
+            }
         }
 
-        findUserBinding.edtSearch.afterTextChanged {
+        findUserBinding.searchField.setEndIconOnClickListener {
 
-            userViewModel.callFindUserApi(it)
+            resetSearch(true)
         }
     }
 
     private fun setLiveDataObservers() {
 
-        userViewModel.searchResponse.observe(this, Observer { state ->
+        findUserViewModel.searchResults.observe(this, Observer { state ->
 
             if (state == null) {
                 return@Observer
@@ -70,22 +82,49 @@ class FindUserFragment : Fragment() {
             when (state) {
 
                 is ResultWrapper.Loading -> {
+
+                    findUserBinding.progress.show(true)
                 }
                 is ResultWrapper.GenericError -> {
+
+                    findUserBinding.progress.show(false)
 
                     if (state.code == 422) {
                         userItemAdapter?.clear()
                     }
+
+                    state.message?.let {
+                        if (it.isNotEmpty()) {
+                            showSnackBar(it)
+                        }
+                    }
                 }
                 is ResultWrapper.Success<FindUserResponse?> -> {
+
+                    findUserBinding.progress.show(false)
 
                     findUserBinding.edtSearch.hideKeyboard()
 
                     val response = state.response as FindUserResponse
                     userItemAdapter?.addItems(response.users)
                 }
-                else -> requireActivity().toast("Error")
+                is ResultWrapper.NetworkError -> {
+
+                    findUserBinding.progress.show(false)
+                    showSnackBar(getString(R.string.warning_no_internet_connection))
+                }
             }
         })
+    }
+
+    private fun resetSearch(clear: Boolean) {
+        findUserBinding.edtSearch.run {
+            hideKeyboard()
+            if (clear) {
+                text = null
+            }
+        }
+        findUserViewModel.cancelJob()
+        userItemAdapter?.clear()
     }
 }

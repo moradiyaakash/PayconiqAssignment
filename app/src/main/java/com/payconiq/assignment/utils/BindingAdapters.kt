@@ -9,10 +9,12 @@ object BindingAdapters {
 
     @BindingAdapter("imageUrl")
     @JvmStatic
-    fun bindImageUrl(view: ImageView, url: String) {
-        Glide.with(view.context)
-            .load(url)
-            .transition(DrawableTransitionOptions.withCrossFade())
-            .into(view)
+    fun setImageUrl(view: ImageView, url: String?) {
+        if (url.toString().isNotEmpty()) {
+            Glide.with(view.context)
+                .load(url.toString())
+                .transition(DrawableTransitionOptions.withCrossFade())
+                .into(view)
+        }
     }
 }

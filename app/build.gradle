@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
+    id 'androidx.navigation.safeargs'
 }
 
 android {
@@ -18,8 +19,18 @@ android {
     }
 
     buildTypes {
-        release {
+        debug {
+
+            debuggable true
             minifyEnabled false
+            buildConfigField "String", "BaseUrl", project.BASE_URL
+        }
+        release {
+
+            debuggable false
+            minifyEnabled true
+            shrinkResources true
+            buildConfigField "String", "BaseUrl", project.BASE_URL
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
