@@ -58,7 +58,7 @@ class FindUserFragment : Fragment() {
 
         findUserBinding.edtSearch.afterTextChanged { text ->
 
-            if (text.isNotEmpty()) {
+            if (text.trim().isNotEmpty()) {
                 findUserViewModel.callFindUserApi(text)
             } else {
                 resetSearch(false)

@@ -4,7 +4,7 @@ import com.google.gson.Gson
 import com.payconiq.assignment.network.ErrorWrapper
 import com.payconiq.assignment.network.HttpErrorCode
 import com.payconiq.assignment.network.ResultWrapper
-import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import retrofit2.Response
@@ -14,10 +14,9 @@ import java.util.concurrent.TimeoutException
 open class BaseRepository {
 
     suspend fun <T : Any> safeApiCall(
-        dispatcher: CoroutineDispatcher,
         call: suspend () -> Response<T>
     ): ResultWrapper<T?> {
-        return withContext(dispatcher) {
+        return withContext(Dispatchers.IO) {
             try {
                 val response = call.invoke()
                 when {

@@ -1,6 +1,5 @@
 package com.payconiq.assignment.viewModels
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -22,10 +21,6 @@ class FindUserViewModel : ViewModel() {
     private val userRepository = UserRepository(ApiClient.apiService)
 
     private var searchJob: Job? = null
-
-    fun onSearchTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-        callFindUserApi(text = s.toString())
-    }
 
     fun callFindUserApi(text: String?) {
         cancelJob()
